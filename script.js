@@ -121,8 +121,9 @@ const init = () => {
   modalScoreText.innerText = '000';
 };
 
+let enemySpawnIntervalTimer;
 const spawnEnemies = () => {
-  setInterval(() => {
+  enemySpawnIntervalTimer = setInterval(() => {
     const radius = Math.random() * (30 - 4) + 4;
 
     let x, y;
@@ -188,6 +189,7 @@ const animate = () => {
 
     if (playerEnemydist - enemy.radius - player.radius < 1) {
       cancelAnimationFrame(animationId);
+      clearInterval(enemySpawnIntervalTimer);
       modalScoreText.innerText = score;
       modal.classList.remove('hidden');
     }
