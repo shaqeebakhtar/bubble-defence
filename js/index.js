@@ -1,6 +1,8 @@
 const canvas = document.querySelector('#canvas');
 const scoreText = document.querySelector('#score');
-const modalScoreText = document.querySelector('#modal-score');
+const highScoreText = document.querySelector('#high-score');
+const modalScoreText = document.querySelector('#modal__score');
+const modalHighScoreText = document.querySelector('#modal__high-score');
 const startBtn = document.querySelector('#btn-start');
 const modal = document.querySelector('#modal');
 
@@ -9,100 +11,6 @@ const ctx = canvas.getContext('2d');
 canvas.width = innerWidth;
 canvas.height = innerHeight;
 
-class Player {
-  constructor(x, y, radius, color) {
-    this.x = x;
-    this.y = y;
-    this.radius = radius;
-    this.color = color;
-  }
-
-  draw() {
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-    ctx.fillStyle = this.color;
-    ctx.fill();
-  }
-}
-
-class Projectile {
-  constructor(x, y, radius, color, velocity) {
-    this.x = x;
-    this.y = y;
-    this.radius = radius;
-    this.color = color;
-    this.velocity = velocity;
-  }
-
-  draw() {
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-    ctx.fillStyle = this.color;
-    ctx.fill();
-  }
-
-  update() {
-    this.draw();
-    this.x = this.x + this.velocity.x;
-    this.y = this.y + this.velocity.y;
-  }
-}
-
-class Enemy {
-  constructor(x, y, radius, color, velocity) {
-    this.x = x;
-    this.y = y;
-    this.radius = radius;
-    this.color = color;
-    this.velocity = velocity;
-  }
-
-  draw() {
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-    ctx.fillStyle = this.color;
-    ctx.fill();
-  }
-
-  update() {
-    this.draw();
-    this.x = this.x + this.velocity.x;
-    this.y = this.y + this.velocity.y;
-  }
-}
-
-const friction = 0.99;
-
-class Particle {
-  constructor(x, y, radius, color, velocity) {
-    this.x = x;
-    this.y = y;
-    this.radius = radius;
-    this.color = color;
-    this.velocity = velocity;
-    this.alpha = 1;
-  }
-
-  draw() {
-    ctx.save();
-    ctx.globalAlpha = this.alpha;
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-    ctx.fillStyle = this.color;
-    ctx.fill();
-    ctx.restore();
-  }
-
-  update() {
-    this.draw();
-    this.velocity.x *= friction;
-    this.velocity.y *= friction;
-    this.x = this.x + this.velocity.x;
-    this.y = this.y + this.velocity.y;
-    this.alpha -= 0.01;
-  }
-}
-
 const x = canvas.width / 2;
 const y = canvas.height / 2;
 
@@ -110,6 +18,18 @@ let player = new Player(x, y, 10, 'white');
 let projectiles = [];
 let enemies = [];
 let particles = [];
+let score = 0;
+let highScore =
+  parseInt(localStorage.getItem('high_score')) || Number.MIN_VALUE;
+let difficulty;
+
+let ENEMY_SPEED;
+let ENEMY_MAX_RADIUS;
+let ENEMY_SPAWN_TIME;
+let PROJECTILE_SPEED;
+
+highScoreText.innerHTML = localStorage.getItem('high_score') || '000';
+modalHighScoreText.innerHTML = localStorage.getItem('high_score') || '000';
 
 const init = () => {
   player = new Player(x, y, 10, 'white');
@@ -117,14 +37,14 @@ const init = () => {
   enemies = [];
   particles = [];
   score = 0;
-  scoreText.innerText = '000';
-  modalScoreText.innerText = '000';
+  scoreText.innerHTML = '000';
+  modalScoreText.innerHTML = '000';
 };
 
 let enemySpawnIntervalTimer;
 const spawnEnemies = () => {
   enemySpawnIntervalTimer = setInterval(() => {
-    const radius = Math.random() * (30 - 4) + 4;
+    const radius = Math.random() * (ENEMY_MAX_RADIUS - 4) + 4;
 
     let x, y;
 
@@ -140,15 +60,14 @@ const spawnEnemies = () => {
 
     const angle = Math.atan2(canvas.height / 2 - y, canvas.width / 2 - x);
     const velocity = {
-      x: Math.cos(angle),
-      y: Math.sin(angle),
+      x: Math.cos(angle) * ENEMY_SPEED,
+      y: Math.sin(angle) * ENEMY_SPEED,
     };
 
     enemies.push(new Enemy(x, y, radius, color, velocity));
-  }, 1000);
+  }, ENEMY_SPAWN_TIME);
 };
 
-let score = 0;
 let animationId;
 
 const animate = () => {
@@ -190,7 +109,11 @@ const animate = () => {
     if (playerEnemydist - enemy.radius - player.radius < 1) {
       cancelAnimationFrame(animationId);
       clearInterval(enemySpawnIntervalTimer);
-      modalScoreText.innerText = score;
+      highScore = Math.max(score, highScore);
+      localStorage.setItem('high_score', highScore);
+      modalHighScoreText.innerHTML = highScore;
+      modalScoreText.innerHTML = score;
+      startBtn.innerHTML = 'Play Again';
       modal.classList.remove('hidden');
     }
 
@@ -204,7 +127,8 @@ const animate = () => {
       if (projectileEnemydist - enemy.radius - projectile.radius < 1) {
         // increase score
         score += 100;
-        scoreText.innerText = score;
+        scoreText.innerHTML = score;
+        highScoreText.innerHTML = Math.max(score, highScore);
 
         // create explosion
         for (let i = 0; i < enemy.radius * 2; i++) {
@@ -225,7 +149,8 @@ const animate = () => {
         // shrink enemies on hit
         if (enemy.radius - 10 > 5) {
           score += 100;
-          scoreText.innerText = score;
+          scoreText.innerHTML = score;
+          highScoreText.innerHTML = Math.max(score, highScore);
 
           gsap.to(enemy, {
             radius: enemy.radius - 10,
@@ -235,7 +160,9 @@ const animate = () => {
           }, 0);
         } else {
           score += 250;
-          scoreText.innerText = score;
+          scoreText.innerHTML = score;
+          highScoreText.innerHTML = Math.max(score, highScore);
+
           setTimeout(() => {
             enemies.splice(enemyIdx, 1);
             projectiles.splice(projectileIdx, 1);
@@ -245,26 +172,3 @@ const animate = () => {
     });
   });
 };
-
-addEventListener('click', (event) => {
-  const angle = Math.atan2(
-    event.clientY - canvas.height / 2,
-    event.clientX - canvas.width / 2
-  );
-
-  const velocity = {
-    x: Math.cos(angle) * 5,
-    y: Math.sin(angle) * 5,
-  };
-
-  projectiles.push(
-    new Projectile(canvas.width / 2, canvas.height / 2, 5, 'white', velocity)
-  );
-});
-
-startBtn.addEventListener('click', () => {
-  init();
-  animate();
-  spawnEnemies();
-  modal.classList.add('hidden');
-});

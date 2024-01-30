@@ -20,10 +20,44 @@
     </style>
   </head>
   <body class="bg-gray-950">
-    <div
-      class="absolute top-4 right-4 z-50 bg-gray-900 py-1 px-2 text-2xl font-bold rounded-md text-center text-white select-none tracking-wide"
-    >
-      <span id="score">000</span>
+    <div class="absolute top-4 right-4 z-50 flex gap-2">
+      <div
+        class="bg-gray-100/10 py-1 px-2 text-xl font-bold rounded-md text-center text-white select-none tracking-wide flex items-center gap-2"
+      >
+        <span class="w-4 h-4 text-yellow-500">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-4 h-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-trophy"
+          >
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+            <path d="M4 22h16" />
+            <path
+              d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"
+            />
+            <path
+              d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"
+            />
+            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+          </svg>
+        </span>
+        <span class="text-sm">X</span>
+        <span id="high-score">000</span>
+      </div>
+      <div
+        class="bg-gray-100/10 py-1 px-2 text-xl font-bold rounded-md text-center text-white select-none tracking-wide flex items-center gap-2"
+      >
+        <div class="w-4 h-4 rounded-full bg-yellow-500"></div>
+        <span class="text-sm">X</span>
+        <span id="score">000</span>
+      </div>
     </div>
 
     <div
@@ -31,19 +65,102 @@
       class="absolute z-[99] flex items-center justify-center inset-0 border-red-500"
     >
       <div
-        class="bg-gray-900 max-w-sm w-full rounded-xl p-10 text-white text-center flex flex-col items-center gap-6"
+        class="bg-gray-900 max-w-md w-full rounded-xl p-10 text-white text-center flex flex-col items-center gap-6"
       >
-        <div class="space-y-1">
-          <p id="modal-score" class="text-5xl font-bold tracking-wide">000</p>
-          <span class="text-lg font-semibold uppercase tracking-wider"
-            >Points</span
-          >
+        <div class="flex justify-evenly w-full mb-4">
+          <div class="flex flex-col items-center gap-2">
+            <div class="w-8 h-8 rounded-full bg-yellow-500"></div>
+            <p id="modal__score" class="text-4xl font-bold tracking-wide">
+              000
+            </p>
+          </div>
+          <div class="flex flex-col items-center gap-2">
+            <span class="w-8 h-8 text-yellow-500">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-8 h-8"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-trophy"
+              >
+                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+                <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+                <path d="M4 22h16" />
+                <path
+                  d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"
+                />
+                <path
+                  d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"
+                />
+                <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+              </svg>
+            </span>
+            <p id="modal__high-score" class="text-4xl font-bold tracking-wide">
+              000
+            </p>
+          </div>
         </div>
+
+        <div
+          class="flex items-center justify-between w-full gap-2 font-semibold"
+        >
+          <div class="flex-1">
+            <input
+              type="radio"
+              id="easy"
+              name="difficulty"
+              value="easy"
+              class="hidden peer"
+              checked
+            />
+            <label
+              for="easy"
+              class="inline-flex justify-center w-full p-2.5 text-white border-2 border-gray-200/20 rounded-md cursor-pointer peer-checked:border-violet-700 hover:bg-gray-200/20"
+            >
+              Easy
+            </label>
+          </div>
+          <div class="flex-1">
+            <input
+              type="radio"
+              id="medium"
+              name="difficulty"
+              value="medium"
+              class="hidden peer"
+            />
+            <label
+              for="medium"
+              class="inline-flex justify-center w-full p-2.5 text-white border-2 border-gray-200/20 rounded-md cursor-pointer peer-checked:border-violet-700 hover:bg-gray-200/20"
+            >
+              Medium
+            </label>
+          </div>
+          <div class="flex-1">
+            <input
+              type="radio"
+              id="hard"
+              name="difficulty"
+              value="hard"
+              class="hidden peer"
+            />
+            <label
+              for="hard"
+              class="inline-flex justify-center w-full p-2.5 text-white border-2 border-gray-200/20 rounded-md cursor-pointer peer-checked:border-violet-700 hover:bg-gray-200/20"
+            >
+              Hard
+            </label>
+          </div>
+        </div>
+
         <button
           id="btn-start"
-          class="bg-violet-700 text-white rounded-md px-4 py-2 font-semibold hover:bg-violet-600 transition-colors w-40 uppercase"
+          class="w-full bg-violet-700 text-white rounded-md px-4 py-2 font-semibold hover:bg-violet-600 transition-colors w-40 uppercase"
         >
-          Start
+          Play
         </button>
       </div>
     </div>
@@ -58,6 +175,11 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     ></script>
-    <script src="./script.js"></script>
+    <script src="./js/classes/player.js"></script>
+    <script src="./js/classes/projectile.js"></script>
+    <script src="./js/classes/enemy.js"></script>
+    <script src="./js/classes/particle.js"></script>
+    <script src="./js/index.js"></script>
+    <script src="./js/event-listeners.js"></script>
   </body>
 </html>
